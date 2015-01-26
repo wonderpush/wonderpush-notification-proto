@@ -1,0 +1,146 @@
+/*
+ * Licensed to WonderPush (www.wonderpush.com) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. WonderPush licenses this
+ * file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package notification.proto;
+option java_package = "com.wonderpush.notification";
+option java_outer_classname = "Proto";
+option optimize_for = LITE_RUNTIME;
+
+
+// ====================================================================
+message MapEntry {
+  enum Type {
+    VOID   = 0;
+    INT32  = 1;
+    UINT32 = 2;
+    SINT32 = 3;
+
+    INT64  = 4;
+    UINT64 = 5;
+    SINT64 = 6;
+
+    DOUBLE = 7;
+    BOOL   = 8;
+    STRING = 9;
+    BYTES  = 10;
+  }
+
+  required Type   type = 1;
+  required string name = 2;
+
+  optional int32  int32_val  = 11;
+  optional uint32 uint32_val = 12;
+  optional sint32 sint32_val = 13;
+  optional int64  int64_val  = 14;
+  optional uint64 uint64_val = 15;
+  optional sint64 sint64_val = 16;
+  optional double double_val = 17;
+  optional bool   bool_val   = 18;
+  optional string string_val = 19;
+  optional bytes  bytes_val  = 20;
+}
+
+
+// ====================================================================
+message CliMessage {
+  enum Type {
+    CONNECT    = 1;
+    DISCONNECT = 2;
+    ACK        = 3;
+  }
+
+  required Type type = 1;
+
+  optional Connect    connect    = 11;
+  optional Disconnect disconnect = 12;
+  optional Ack        ack        = 13;
+}
+
+
+// ====================================================================
+message SrvMessage {
+  enum Type {
+    CONNECTED    = 1;
+    DISCONNECTED = 2;
+    NOTIFICATION = 3;
+    ACKED        = 4;
+  }
+
+  required Type type = 1;
+
+  optional Connected    connected    = 11;
+  optional Disconnected disconnected = 12;
+  optional Notification notification = 13;
+  optional Acked        acked        = 14;
+}
+
+
+// ====================================================================
+message Connect {
+  required uint32 version      = 1;
+  required string access_token = 2;
+  optional uint32 lastid       = 3 [ default = 0 ];
+
+  repeated MapEntry options    = 10;
+}
+
+message Connected {
+  required uint32 version      = 1;
+
+  repeated MapEntry options    = 10;
+}
+
+message Disconnect {
+}
+
+message Disconnected {
+  enum StatusCode {
+    SUCCESS              = 0;
+
+    INTERNAL_ERROR       = 101;
+    INVALID_MESSAGE      = 102;
+    PROTOCOL_ERROR       = 103;
+    NETWORK_ERROR        = 104;
+    CONNECT_TIMEOUT      = 105;
+    PERMISSION_DENIED    = 106;
+    UNRESPONSIVE_CLIENT  = 107;
+    TOO_MANY_CONNECTIONS = 108;
+    SESSION_CLOSED       = 109;
+    INVALID_VERSION      = 110;
+    // FIXME
+  }
+
+  required StatusCode status = 1;
+  optional string     reason = 2;
+}
+
+
+// ====================================================================
+message Notification {
+  required uint32 id      = 1;
+  required string payload = 2;
+}
+
+message Ack {
+  required uint32 id = 1;
+}
+
+message Acked {
+  required uint32 id = 1;
+}
